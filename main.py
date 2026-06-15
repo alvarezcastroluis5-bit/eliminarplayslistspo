@@ -7,8 +7,8 @@ from bottle import abort, redirect, request, response, route, run, template
 # COLOCA AQUÍ TUS DATOS DE SPOTIFY DEVELOPER
 # Importante: usa un CLIENT_SECRET NUEVO, no el que mostraste en captura.
 # =========================================================
-CLIENT_ID = "PEGA_AQUI_TU_CLIENT_ID"
-CLIENT_SECRET = "PEGA_AQUI_TU_NUEVO_CLIENT_SECRET"
+CLIENT_ID = "32931330adc34dfd9c0cca8cc952ca75"
+CLIENT_SECRET = "326e4e515782418d812376d610b5c46f"
 
 SCOPE = "user-library-read user-library-modify playlist-read-private playlist-modify-private playlist-modify-public user-follow-read user-follow-modify"
 REDIRECT_URI = "http://127.0.0.1:8080/callback"
