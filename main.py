@@ -1,5 +1,4 @@
 import urllib.parse
-import requests
 from bottle import abort, redirect, request, response, route, run, template
 
 CLIENT_ID = "32931330adc34dfd9c0cca8cc952ca75"
