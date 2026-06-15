@@ -1,16 +1,20 @@
 import urllib.parse
-
 import requests
 from bottle import abort, redirect, request, response, route, run, template
 
-# =========================================================
-# COLOCA AQUÍ TUS DATOS DE SPOTIFY DEVELOPER
-# Importante: usa un CLIENT_SECRET NUEVO, no el que mostraste en captura.
-# =========================================================
 CLIENT_ID = "32931330adc34dfd9c0cca8cc952ca75"
 CLIENT_SECRET = "326e4e515782418d812376d610b5c46f"
 
-SCOPE = "user-library-read user-library-modify playlist-read-private playlist-modify-private playlist-modify-public user-follow-read user-follow-modify"
+SCOPE = (
+    "user-library-read "
+    "user-library-modify "
+    "playlist-read-private "
+    "playlist-modify-private "
+    "playlist-modify-public "
+    "user-follow-read "
+    "user-follow-modify"
+)
+
 REDIRECT_URI = "http://127.0.0.1:8080/callback"
 BASE_URL = "https://api.spotify.com/v1"
 RESPONSE_ITEMS_LIMIT = 50
@@ -48,13 +52,18 @@ def _spotify_request(method, url, access_token, **kwargs):
     if res.status_code not in (200, 201, 202, 204):
         try:
             data = res.json()
-            message = data.get("error", {}).get("message") or data.get("error_description") or str(data)
+            message = (
+                data.get("error", {}).get("message")
+                or data.get("error_description")
+                or str(data)
+            )
         except Exception:
             message = res.text
         abort(res.status_code, message)
 
     if res.status_code == 204 or not res.text:
         return None
+
     return res.json()
 
 
@@ -70,6 +79,7 @@ def main():
 @route("/callback")
 def callback():
     code = request.query.code
+
     if code is None:
         abort(401, "Error: code not provided")
 
@@ -92,6 +102,7 @@ def callback():
         abort(res.status_code, error)
 
     data = res.json()
+
     response.set_cookie("access_token", data["access_token"], path="/")
     response.set_cookie("refresh_token", data.get("refresh_token", ""), path="/")
 
@@ -115,11 +126,13 @@ def _get_items(access_token, item_type):
             f"{BASE_URL}/me/{item_type}?limit={RESPONSE_ITEMS_LIMIT}&offset={offset}",
             access_token,
         )
+
         batch = data.get("items", [])
         items.extend(batch)
 
         total = data.get("total", 0)
         offset += RESPONSE_ITEMS_LIMIT
+
         if offset >= total or not batch:
             break
 
@@ -185,6 +198,7 @@ def delete():
     redirect_to = request.query.redirect_to or ""
 
     allowed_types = {"tracks", "albums", "shows", "playlists"}
+
     if item_type not in allowed_types:
         abort(400, "Tipo de elemento no permitido")
 
@@ -202,7 +216,8 @@ def delete():
             )
     else:
         for i in range(0, len(ids), 50):
-            chunk = ids[i : i + 50]
+            chunk = ids[i:i + 50]
+
             _spotify_request(
                 "DELETE",
                 f"{BASE_URL}/me/{item_type}?ids={','.join(chunk)}",
